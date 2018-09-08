@@ -34,3 +34,48 @@ exports.signin = function(req, res) {
     }
   });
 };
+
+
+exports.display = function(req, res) {
+  console.log(req.headers.authorization);
+  var newUsername = jwt.decode(req.headers.authorization);
+  console.log(newUsername);
+  var string = JSON.stringify(newUsername);
+  var objectValue = JSON.parse(string);
+  var getuser = objectValue['username'];
+
+  User.findOne({
+    username: getuser
+  }, function(err, user) {
+    if (err) throw err;
+    if (!user) {
+      res.status(401).json({ message: 'Authentication failed. User not found.', status: '401' });
+    } else if (user) {
+        return res.json(user);
+    }
+  });
+};
+
+
+
+exports.edit = function(req, res) {
+  console.log(req.headers.authorization);
+  var newUsername = jwt.decode(req.headers.authorization);
+  console.log(newUsername);
+  var string = JSON.stringify(newUsername);
+  var objectValue = JSON.parse(string);
+  var getuser = objectValue['username'];
+  User.findOneAndUpdate({
+    username: getuser
+  },
+  req.body,
+  {new:true},
+  function(err, user) {
+    if (err) throw err;
+    if (!user) {
+      res.status(401).json({ message: 'Authentication failed. User not found.', status: '401' });
+    } else if (user) {
+        return res.json({ message: 'User details updated successfully', status: '200' });
+    }
+  });
+};
